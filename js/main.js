@@ -9,7 +9,7 @@ Vue.component('note-card', {
             <h3>{{ note.title }}</h3>
             <ul>
                 <li v-for="(item, index) in note.items" :key="index">
-                    <input type="checkbox" v-model="item.checked" @change="checkItem(index)">
+                    <input type="checkbox" v-model="item.checked" @change="checkItem()">
                     {{ item.text }}
                 </li>
             </ul>
@@ -19,21 +19,17 @@ Vue.component('note-card', {
         </div>
     `,
     methods: {
-        checkItem(index) {
-            this.$nextTick(() => {
-                if (this.columnIndex < 2 && this.checkCompletionPercentage() > 50) {
-                    this.onMoveNote(this.note, this.columnIndex + 1);
-                }
-                if (this.columnIndex === 1 && this.checkCompletionPercentage() === 100) {
-                    this.onMoveNote(this.note, 2);
-                }
-                if (this.columnIndex === 2 && this.checkCompletionPercentage() === 100) {
-                    this.onMoveNote(this.note, 3);
-                }
-            });
-        }
-    },
-    computed: {
+        checkItem() {
+            if (this.columnIndex < 2 && this.checkCompletionPercentage() > 50) {
+                this.onMoveNote(this.note, this.columnIndex + 1);
+            }
+            if (this.columnIndex === 1 && this.checkCompletionPercentage() === 100) {
+                this.onMoveNote(this.note, 2);
+            }
+            if (this.columnIndex === 2 && this.checkCompletionPercentage() === 100) {
+                this.onMoveNote(this.note, 3);
+            }
+        },
         checkCompletionPercentage() {
             const completedItems = this.note.items.filter(item => item.checked).length;
             return (completedItems / this.note.items.length) * 100;
@@ -67,6 +63,7 @@ Vue.component('app-board', {
                 </div>
             </div>
             <button @click="createNote" v-if="columns[0].limit > this.getNotesInColumn(0).length">Создать Заметку</button>
+            <button @click="clearAllNotes">Очистить все заметки</button>
         </div>
     `,
     methods: {
@@ -104,13 +101,19 @@ Vue.component('app-board', {
                 const newNote = {
                     title: 'Новая Заметка',
                     items: [
-                        { text: 'Задача 1', checked: false },{ text: 'Задача 2', checked: false },{ text: 'Задача 3', checked: false }
+                        { text: 'Задача 1', checked: false },
+                        { text: 'Задача 2', checked: false },
+                        { text: 'Задача 3', checked: false }
                     ],
                     lastUpdated: null
                 };
                 this.notes.push(newNote);
                 this.saveToLocalStorage();
             }
+        },
+        clearAllNotes() {
+            this.notes = [];
+            this.saveToLocalStorage();
         },
         saveToLocalStorage() {
             localStorage.setItem('notes', JSON.stringify(this.notes));
