@@ -27,10 +27,11 @@ new Vue({
     addCard() {
       if (this.newCardTitle.trim() !== '') {
         if (this.column2Full) {
-          alert("Нельзя добавить карточку во второй столбец из-за достижения лимита.");
-          return;
-        }
-        if (!this.column1Locked && this.column1.length < 3) {
+          this.column2Full1 = true;
+          this.column1Locked = true; 
+          this.column1.splice(0); 
+          this.newCardTitle = ''; 
+        } else if (!this.column1Locked && this.column1.length < 3) {
           this.column1.push({
             title: this.newCardTitle,
             items: [
@@ -39,17 +40,9 @@ new Vue({
               { text: 'Пункт 3', checked: false }
             ]
           });
-        } else {
-          alert("Нельзя добавить карточку в первый столбец из-за блокировки или достижения лимита.");
-          return;
+          this.newCardTitle = '';
         }
-        this.newCardTitle = '';
-
-        // Проверяем количество карточек во втором столбце перед сохранением
-        if (this.column2.length < 5) {
-          this.column1Locked = false; // Разблокируем первый столбец
-        }
-
+        
         localStorage.setItem('notes', JSON.stringify({
           column1: this.column1,
           column2: this.column2,
