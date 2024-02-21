@@ -156,5 +156,55 @@ new Vue({
         column2Full1: this.column2Full1
       }));
     },
+
+    moveAllToCompleted() {
+      if (this.column1Locked) {
+          return;
+      }
+
+      // Перемещаем все карточки из column1 в column3
+      this.column1.forEach(card => {
+          card.items.forEach(item => {
+              item.checked = true;
+              item.disabled = true; // Отмечаем чекпоинты как disabled
+          });
+
+          // Помечаем, что карточка была перемещена
+          card.moved = true;
+
+          // Перемещаем карточку в column3
+          this.column3.push(card);
+      });
+
+      // Очищаем column1
+      this.column1 = [];
+
+      // Перемещаем все карточки из column2 в column3
+      this.column2.forEach(card => {
+          card.items.forEach(item => {
+              item.checked = true;
+              item.disabled = true; // Отмечаем чекпоинты как disabled
+          });
+
+          // Помечаем, что карточка была перемещена
+          card.moved = true;
+
+          // Перемещаем карточку в column3
+          this.column3.push(card);
+      });
+
+      // Очищаем column2
+      this.column2 = [];
+
+      // Обновляем localStorage
+      localStorage.setItem('notes', JSON.stringify({
+          column1: this.column1,
+          column2: this.column2,
+          column3: this.column3,
+          column1Locked: this.column1Locked,
+          column2Full1: this.column2Full1
+      }));
+  },
+
   }
 });
